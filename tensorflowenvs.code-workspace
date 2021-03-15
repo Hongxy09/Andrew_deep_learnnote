@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"python.autoComplete.extraPaths": [
+			
+		],
+		"editor.codeActionsOnSave": null,
+		"remote.extensionKind": {
+
+			"pub.name": [
+				"ui"
+			]
+		}
+	}
+}
