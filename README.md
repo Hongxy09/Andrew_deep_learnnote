@@ -78,4 +78,3 @@ print(sess.run(result)) -->
 #C:/Otherapp/Anaconda/envs
 
 可以在左下角自由切换python版本
-测试
