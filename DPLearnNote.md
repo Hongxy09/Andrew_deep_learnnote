@@ -1,3 +1,11 @@
+# DP复盘笔记
+1. 数学知识补充
+> 线性回归方程：建模函数以获得损失函数（正规方程=一步求解=最小二乘法或梯度下降=逐步接近求解）最小的模型（函数）=一堆离散点最接近的函数曲线是哪个
+> 多元回归中把参数放入矩阵中，计算矩阵方程获得最优解（使得损失函数最小的参数值θ），如果矩阵方程中的一部分无法求逆矩阵（奇异矩阵），引入正则化保证函数有唯一解
+2. 机器学习基础
+> 决策边界：logistic回归算法中决定y输出1or0的一条分界线
+
+
 # 1th part
 ## 单层感知机与多层感知机
 >单层感知机：线性空间；多层感知机：非线性空间  
@@ -10,10 +18,10 @@
 >a=b+Σxiwi  
 >y=h(a)
 ## 本地导入和mnist.py脚本的运行
-1.http://yann.lecun.com/exdb/mnist/  
+1. http://yann.lecun.com/exdb/mnist/  
 > 下载相关文件后（.gz）放入书中（深度学习入门）源代码的dataset目录下，此时运行mnist.py脚本文件则成功  
 
-2.在自己写的deeplearn.py文件中引用load_mnist文件  
+2. 在自己写的deeplearn.py文件中引用load_mnist文件  
 > 同层文件目录`import mnist.py`  
 > load_mnist.py在deeplearn.py所在文件夹的子文件夹dataset内
 >> 1)`import dataset.test`
