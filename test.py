@@ -16,3 +16,4 @@ for i in range(3):
     b += d[i]*np.dot(q[i], p[i])
 print(a)
 print(b)
+print(a)
