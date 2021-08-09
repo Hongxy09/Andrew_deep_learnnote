@@ -11,3 +11,5 @@
 import torch
 ModuleNotFoundError: No module named 'torch'
 * 卸载环境后重装，在终端仍旧显示找不到模块，但是coderunner可以运行
+2. 打开根目录进行运行失败
+*仍旧提示找不到模块，在prompt进行测试成功输出了torch的版本

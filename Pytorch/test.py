@@ -1,3 +1,5 @@
-import numpy
-print(numpy.__version__)
-#记得不要终端运行，凑合使吧
+import torch
+import torchvision
+# x=torch.rand(5,3)
+# print(x)
+print(torch.__version__)
