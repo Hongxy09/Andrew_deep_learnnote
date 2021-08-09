@@ -1,0 +1,7 @@
+{
+    "python.formatting.provider": "autopep8",
+    "python.pythonPath": "C:\\Otherapp\\Anaconda\\envs\\pytorchenv\\python.exe",
+    // "python.envFile": "${workspaceFolder}/.env",
+    "python.linting.pylintArgs": ["--generate-members"],
+    "cmd.integrated.env.windows": {"PYTHONPATH":"${workspaceFolder};${env:PYTHONPATH}"}
+}

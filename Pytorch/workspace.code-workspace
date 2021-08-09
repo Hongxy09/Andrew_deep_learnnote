@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"python.pythonPath": "C:\\Otherapp\\Anaconda\\envs\\pytorchenv\\python.exe",
+		"terminal.integrated.env.windows": {
+			"PYTHONPATH": "${workspaceFolder};${env:PYTHONPATH}"
+		}
+	}
+}
