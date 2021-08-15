@@ -76,15 +76,72 @@ model = torchvision.models.resnet18(pretrained=True)
 for param in model.parameters():
     param.requires_grad = False
 #冻结除了最后一层的其他参数，即计算梯度的唯一参数是最后一层分类器的权重和偏置
+
 #神经网络nn组织
+#基于minbatch计算，计算单个样本要用假minibatch即tensor.unsqueeze(n)
 super(Net, self).__init__()#父类属性初始化
 #卷积层的调用conv
+#权重是滤波器
 m = nn.Conv2d(16=输入通道数, 33=输出通道数, 5=滤波器尺寸, stride=(2, 1), padding=(4, 2))
 input = torch.randn(20, 16, 50, 100)#N,C,H,W=输入数据的个数，通道数，高度，长度
 output = m(input)
 #全连接层的调用linear=Affine做了矩阵变换运算，注意一下权重矩阵下标和数学的矩阵下标有所差别，具体说则是前一层神经元的数目*后一层神经元的数目(此处的计算式是y=XW+B)
 m = nn.Linear(20, 30)#W
 input = torch.randn(128, 20)#X
+output = m(input)
 output.size = torch.Size([128, 30])#y
+#池化层
+torch.nn.MaxPool2d(kernel_size=池化窗口尺寸!=卷积核/滤波器尺寸, stride=None=默认等于池化窗口尺寸,如果剩下的数据不够滑动就丢弃, padding=0, dilation=1, return_indices=False, ceil_mode=False)#取窗口中的最大值
+#展平数据
+torch.flatten(input, start_dim=0, end_dim=-1) → Tensor
+#选择损失函数
+loss_fn=nn.MSELoss()
+#选择梯度更新策略
+import torch.optim as optim
+# create your optimizer
+optimizer = optim.SGD(net.parameters(), lr=0.01)
+# in your training loop:
+optimizer.zero_grad() 
+#计算损失函数梯度
+output=net(input)
+loss=loss_fn(nn(input), target)
+loss.backward()
+#更新参数
+optimizer.step()    # Does the update
+
+#实际操作中需要注意
+#数据集导入
+torch.utils.data.DataLoader(dataset=数据集来源, batch_size=1, shuffle=False=每个周期洗牌打乱, sampler=None=提取样本, batch_sampler=None=提取批量样本, num_workers=0=数据加载的子进程数, collate_fn=None, pin_memory=False, drop_last=False, timeout=0, worker_init_fn=None, multiprocessing_context=None, generator=None, *, prefetch_factor=2, persistent_workers=False)
+#图像输出
+def imshow(img):
+    img = img / 2 + 0.5# unnormalize，将数据重新化为[0，1]方便显示图像
+    npimg = img.numpy()
+    plt.imshow(np.transpose(npimg, (1, 2, 0)))
+    #交换输入的通道数据，因为img的格式是(channels,imgsize,imgsize)而imshow的格式是(imgsize,imgsize,channels)
+    plt.show()
+# get some random training images
+dataiter = iter(trainloader)#for
+images, labels = dataiter.next()
+# show images
+imshow(torchvision.utils.make_grid(images))#拼图
+# make_grid的作用是将若干幅图像拼成一幅图像。
+# 其中padding的作用就是子图像与子图像之间的pad有多宽。nrow是一行放入八个图片。
+# print labels
+print(' '.join('%5s' % classes[labels[j]] for j in range(batch_size)))
+#join方法str.join(sequence)在sequence之间以str连接
+#其中后面那个%是转义符
+print("Accuracy for class {:5s} is: {:.1f} %".format(classes[2],2.12345))
+#{:5s}是占位符，输出Accuracy for class frog  is: 2.1 %
+running_loss += loss.item()
+#item：取出单元素张量的元素值并返回该值，保持原元素类型不变，即：原张量元素为整形，则返回整形，原张量元素为浮点型则返回浮点型
+a=np.random.rand(dim0,dim1...dimn)#0-1均匀分布随机数组
+a=np.random.random(size=None)#浮点数
+a=np.random.randint(low, high=None, size=None, dtype='I')  #整数     
 
 ```
+6.  引入GPU计算
+  ```python
+  device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+  net.to(device)
+  inputs, labels = data[0].to(device), data[1].to(device)
+  ```
