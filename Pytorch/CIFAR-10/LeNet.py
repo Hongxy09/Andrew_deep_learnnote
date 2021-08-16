@@ -68,9 +68,10 @@ INPUT-conv->C1(6@28x28)-subsamling->S2(6@14x14)-conv->C3(16@10x10)-subsampling->
 class CIFARNET(nn.Module):
     def __init__(self):
         super().__init__()
-        self.conv1 = nn.Conv2d(3, 6, 5)  # 输入通道数3输出通道数6卷积核5x5
         self.pool = nn.MaxPool2d(2, 2)  # 池化窗口2x2
+        self.conv1 = nn.Conv2d(3, 6, 5)  # 输入通道数3输出通道数6卷积核5x5
         self.conv2 = nn.Conv2d(6, 16, 5)
+        # self.conv3 = nn.Conv2d(16, 32, 5)
         self.fc1 = nn.Linear(16 * 5 * 5, 120)
         self.fc2 = nn.Linear(120, 84)
         self.fc3 = nn.Linear(84, 10)
@@ -172,10 +173,7 @@ def calculation_test_loss(net,loss_fn,device):
             loss = loss_fn(outputs, labels)  # 计算损失函数，对每一个都算损失函数
         return loss
 
-def print_list_img(l1,l2):
-    '''
-    输入的l1是train曲线，l2是test曲线
-    '''
+def print_list_img(l1,l2,title):
     if len(l1)!=len(l2):
         print("len(l1)!=len(l2),The accuracy curve cannot be drawn!")
     else:
@@ -183,17 +181,10 @@ def print_list_img(l1,l2):
         plt.plot(x, l1, label='train')
         plt.plot(x, l2,label='test')
         plt.xlabel('x epoch')
-        plt.ylabel('y acc')
+        plt.ylabel('y')
+        plt.title(title)
         plt.legend()
         plt.show()
-
-def print_loss_img(train_loss_list):
-    x=np.arange(0,len(train_loss_list))
-    plt.plot(x, train_loss_list, label='loss')
-    plt.xlabel('x epoch')
-    plt.ylabel('y loss')
-    plt.legend()
-    plt.show()
 
 def trainNet_mul(number):
     '''number=重复训练的次数'''
@@ -216,15 +207,16 @@ def trainNet_mul(number):
         test_loss=calculation_test_loss(net,loss_fn,device)
         train_loss_list.append(train_loss)
         test_loss_list.append(test_loss)
+        train_acc_list.append(calculation_accuracy(net,device,set='train'))
+        test_acc_list.append(calculation_accuracy(net,device,set='test'))
         print(f"In epoch {epoch}:")
         print("loss of train = {:.5f} and test = {:.5f}".format(train_loss,test_loss))
-    #     train_acc_list.append(calculation_accuracy(net,device,set='train'))
-    #     test_acc_list.append(calculation_accuracy(net,device,set='test'))
-    # print_list_img(train_acc_list,test_acc_list)
-    print_loss_img(train_loss_list)
+    print_list_img(train_loss_list,test_loss,'losscurv')
+    print_list_img(train_acc_list,test_acc_list,'acccurv')
+    
     print("Finish!")
 
-trainNet_mul(200)
+trainNet_mul(300)
 #先只算10次试试
 # net=CIFARNET()
 # loss_fn = nn.CrossEntropyLoss()

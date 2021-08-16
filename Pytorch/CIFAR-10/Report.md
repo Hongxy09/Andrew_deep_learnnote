@@ -14,11 +14,10 @@ INPUT-conv->C1(6@28x28)-subsamling->S2(6@14x14)-conv->C3(16@10x10)-subsampling->
 * 整合运行函数，可以输出训练集和测试集准确率关于循环次数的变化曲线```print_list_img(l1,l2,epoch)```
 1. 初始数据（89% vs 60%）
 循环两次时训练集准确率为57%，测试集准确率为55%，为提高准确率同时保持较快的运行速度，调整batchsize=20，epoch=50，获得Accuracy of train network: 89 %，Accuracy of  test network: 60 %，记录为初始数据
-2. 实验1：引入学习率衰减和GPU计算（95% vs 60%）
+2. 引入学习率衰减和GPU计算（95% vs 60%）
 ```scheduler = optim.lr_scheduler.StepLR(optimizer,step_size=5,gamma = 0.8)```
 再次测试，调整batchsize=20，epoch=10，采用小批量计算验证算法正确性。获得准确率为95%和60%。由于train数据集下准确率与test数据集下准确率差距较大，检查学习过程发现学习过程直接导入了之前初始数据时的参数，使得学习率衰减其实并没有起到很大作用。
-3. 实验2：纠正代码后更换学习率衰减策略（71% vs 65%）
+3. 纠正代码后更换学习率衰减策略
 ```scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9)```
-调整epoch=200，发现准确率在epoch=120左右开始分别停滞在71%和65%。
-4. 实验3：调整输出，查看损失函数变化情况以寻找导致实验2结果的原因
+调整epoch=200，打印训练集损失函数图形如下![训练集损失函数](../img/loss-train.png)
 
