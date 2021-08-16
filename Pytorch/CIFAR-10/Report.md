@@ -12,12 +12,12 @@ INPUT-conv->C1(6@28x28)-subsamling->S2(6@14x14)-conv->C3(16@10x10)-subsampling->
 实现可以选择计算整体准确度或是分类别准确度函数```test_Net(eachclass=False)```
 # 算法优化
 * 整合运行函数，可以输出训练集和测试集准确率关于循环次数的变化曲线```print_list_img(l1,l2,epoch)```
-1. 初始数据（89% vs 60%）
+1. 初始数据（最终训练集和测试集准确率分别为89%，65%）
 循环两次时训练集准确率为57%，测试集准确率为55%，为提高准确率同时保持较快的运行速度，调整batchsize=20，epoch=50，获得Accuracy of train network: 89 %，Accuracy of  test network: 60 %，记录为初始数据
-2. 引入学习率衰减和GPU计算（95% vs 60%）
+2. 引入学习率衰减和GPU计算（最终训练集和测试集准确率分别为95%，60%）
 ```scheduler = optim.lr_scheduler.StepLR(optimizer,step_size=5,gamma = 0.8)```
 再次测试，调整batchsize=20，epoch=10，采用小批量计算验证算法正确性。获得准确率为95%和60%。由于train数据集下准确率与test数据集下准确率差距较大，检查学习过程发现学习过程直接导入了之前初始数据时的参数，使得学习率衰减其实并没有起到很大作用。
-3. 纠正代码后更换学习率衰减策略
+3. 纠正代码后更换学习率衰减策略（最终训练集和测试集准确率分别为71%，65%）
 ```scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9)```
 调整epoch=200，打印训练集损失函数图形如下![训练集损失函数](../img/loss-train.png)
 
