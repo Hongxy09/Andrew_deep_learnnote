@@ -5,6 +5,10 @@ CIFAR10神经网络，其实和MINST很像，可以说是一模一样
 3.导入训练数据，计算损失函数
 4.选择更新策略进行参数更新
 5.导入测试数据，计算准确度
+
+程序应当实现的功能
+1.训练网络（包括数据载入，数据训练，参数更新）
+2.输出对比（绘制loss和acc曲线）
 '''
 import torch
 import torchvision
@@ -22,18 +26,12 @@ PATH = './cifar_net.pth'
 transform = transforms.Compose(
     [transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 # 对输入数据进行规范化处理，将三通道的图像类型转化为张量并将范围归一化为[-1,1]
-batch_size = 50
-# 打包尺寸
-trainset = torchvision.datasets.CIFAR10(
-    root='./data', train=True, download=True, transform=transform)
-trainloader = torch.utils.data.DataLoader(
-    trainset, batch_size=batch_size, shuffle=True, num_workers=0)
-testset = torchvision.datasets.CIFAR10(
-    root='./data', train=False, download=True, transform=transform)
-testloader = torch.utils.data.DataLoader(
-    testset, batch_size=batch_size, shuffle=False, num_workers=0)
-classes = ('plane', 'car', 'bird', 'cat', 'deer',
-           'dog', 'frog', 'horse', 'ship', 'truck')
+batch_size = 30
+trainset = torchvision.datasets.CIFAR10(root='./data', train=True, download=False, transform=transform)
+trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size, shuffle=True, num_workers=0)
+testset = torchvision.datasets.CIFAR10(root='./data', train=False, download=False, transform=transform)
+testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle=False, num_workers=0)
+classes = ('plane', 'car', 'bird', 'cat', 'deer','dog', 'frog', 'horse', 'ship', 'truck')
 # 图像输出
 def imshow(img):
     img = img / 2 + 0.5  # unnormalize，将数据重新化为[0，1]方便显示图像
@@ -56,15 +54,12 @@ def print_img(number=1):
     print(' '.join('%5s' % classes[total_labels[j]]
           for j in range(number*batch_size)))
 
-
 '''
 2.神经网络设计（输入层+隐藏层+输出层）
 INPUT-conv->C1(6@28x28)-subsamling->S2(6@14x14)-conv->C3(16@10x10)-subsampling->S4(16@5x5)
     -flatten->C5(120)-linear->F6(84)-linear->F7(84)->OUTPUT
 深度CNN过程=输入->卷积池化->卷积池化->全连接->全连接->输出
 '''
-
-
 class CIFARNET(nn.Module):
     def __init__(self):
         super().__init__()
@@ -112,9 +107,20 @@ def trainNet_once(net,loss_fn,optimizer,scheduler,device):
         loss.backward()
         optimizer.step()
     torch.save(net.state_dict(), PATH)
-    return loss
+    
 
-def calculation_accuracy(net,device,eachclass=False,set='test'):
+def accuracy(outputs,labels):
+    _, predictions = torch.max(outputs, 1)
+    for label, prediction in zip(labels, predictions):
+        if label == prediction:
+            correct_count += 1
+        total_count += 1
+    accuracy=100 * correct_count / total_count
+    print('Accuracy of %5s network: %d %%' % (set,accuracy))
+    return accuracy
+
+
+def calcul(net,device,eachclass=False,set='test'):
     '''
     5.导入测试数据，计算准确度
     如果计算的是当前整个网络预测的准确率则返回一个int值否则返回一个list
@@ -125,29 +131,18 @@ def calculation_accuracy(net,device,eachclass=False,set='test'):
     sum_correct_count = 0
     with torch.no_grad():
         #选择计算train集或者是test集的准确度
-        if set=='test':
-            for data in testloader:
-                # images, labels = data
-                images, labels = data[0].to(device), data[1].to(device)
-                outputs = net(images)  # 通过神经网络预测类别
-                _, predictions = torch.max(outputs, 1)  # 返回的是概率最大的值的下标
-                for label, prediction in zip(labels, predictions):  # 返回由元组组成的列表
-                    if label == prediction:
-                        correct_pred[classes[label]] += 1
-                    # label是图像对应的标签值，predication是预测的标签值int，如果两个值相等则在字典中该下标对应的类别下+1
-                    total_pred[classes[label]] += 1  # 记录预测过的该类图像数目
-        else:
-            for data in trainloader:
-                # images, labels = data
-                #引入GPU
-                images, labels = data[0].to(device), data[1].to(device)
-                outputs = net(images)  # 通过神经网络预测类别
-                _, predictions = torch.max(outputs, 1)  # 返回的是概率最大的值的下标
-                for label, prediction in zip(labels, predictions):  # 返回由元组组成的列表
-                    if label == prediction:
-                        correct_pred[classes[label]] += 1
-                    # label是图像对应的标签值，predication是预测的标签值int，如果两个值相等则在字典中该下标对应的类别下+1
-                    total_pred[classes[label]] += 1  # 记录预测过的该类图像数目
+        funset =testloader if set=='test'else trainloader
+        for data in funset:
+            # images, labels = data
+            images, labels = data[0].to(device), data[1].to(device)
+            outputs = net(images)  # 通过神经网络预测类别
+            loss = loss_fn(outputs, labels)  # 计算损失函数，对每一个都算损失函数
+            _, predictions = torch.max(outputs, 1)  # 返回的是概率最大的值的下标
+            for label, prediction in zip(labels, predictions):  # 返回由元组组成的列表
+                if label == prediction:
+                    correct_pred[classes[label]] += 1
+                # label是图像对应的标签值，predication是预测的标签值int，如果两个值相等则在字典中该下标对应的类别下+1
+                total_pred[classes[label]] += 1  # 记录预测过的该类图像数目
     #选择输出分类别的准确率或是整体的准确率
     if eachclass == True:
         acc_list=[]
@@ -162,7 +157,7 @@ def calculation_accuracy(net,device,eachclass=False,set='test'):
         sum_total_count = sum(total_pred.values())
         accuracy=100 * sum_correct_count / sum_total_count
         print('Accuracy of %5s network: %d %%' % (set,accuracy))
-        return accuracy
+        return accuracy,loss
 
 def calculation_test_loss(net,loss_fn,device):
     with torch.no_grad():
@@ -197,30 +192,6 @@ def trainNet_mul(number):
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     net.to(device)
     #保存数据并打印图像
-    train_acc_list=[]
-    test_acc_list=[]
-    train_loss_list=[]
-    test_loss_list=[]
-    train_loss,test_loss=0.0,0.0
-    for epoch in range(number):
-        train_loss=trainNet_once(net,loss_fn,optimizer,scheduler,device)
-        test_loss=calculation_test_loss(net,loss_fn,device)
-        train_loss_list.append(train_loss)
-        test_loss_list.append(test_loss)
-        train_acc_list.append(calculation_accuracy(net,device,set='train'))
-        test_acc_list.append(calculation_accuracy(net,device,set='test'))
-        print(f"In epoch {epoch}:")
-        print("loss of train = {:.5f} and test = {:.5f}".format(train_loss,test_loss))
-    print_list_img(train_loss_list,test_loss,'losscurv')
-    print_list_img(train_acc_list,test_acc_list,'acccurv')
-    
-    print("Finish!")
 
-trainNet_mul(300)
-#先只算10次试试
-# net=CIFARNET()
-# loss_fn = nn.CrossEntropyLoss()
-# optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
-# calculation_accuracy(net,set='train')
-# calculation_accuracy(net)
+trainNet_mul(10)
 
