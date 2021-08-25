@@ -162,5 +162,5 @@ for x in range(100):
    writer.add_scalars('data/scalar_group', {"xsinx": x * np.sin(x),"xcosx": x * np.cos(x),"arctanx": np.arctan(x)}, x)
 writer.close()
 #直接查看可视化的办法：from torch.utils.tensorboard import SummaryWriter上面一行启动会话-当前目录
-
+#记录一些快捷指令
 ```
