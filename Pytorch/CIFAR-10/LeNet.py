@@ -19,7 +19,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 global PATH
-PATH = './cifar_net.pth'
+PATH = 'C:/code/Deeplearn_note/Pytorch/CIFAR-10/cifar_net.pth'
 '''
 1.导入数据集并规范化，部分图像可视化
 '''
@@ -27,9 +27,9 @@ transform = transforms.Compose(
     [transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 # 对输入数据进行规范化处理，将三通道的图像类型转化为张量并将范围归一化为[-1,1]
 batch_size = 30
-trainset = torchvision.datasets.CIFAR10(root='./data', train=True, download=False, transform=transform)
+trainset = torchvision.datasets.CIFAR10(root='C:/code/SetData', train=True, download=False, transform=transform)
 trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size, shuffle=True, num_workers=0)
-testset = torchvision.datasets.CIFAR10(root='./data', train=False, download=False, transform=transform)
+testset = torchvision.datasets.CIFAR10(root='C:/code/SetData', train=False, download=False, transform=transform)
 testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle=False, num_workers=0)
 classes = ('plane', 'car', 'bird', 'cat', 'deer','dog', 'frog', 'horse', 'ship', 'truck')
 # 图像输出
@@ -109,7 +109,7 @@ def trainNet_once(net,loss_fn,optimizer,scheduler,device):
     torch.save(net.state_dict(), PATH)
     return loss
 
-def calculation_accuracy(net,device,eachclass=False,set='test'):
+def calculation_accuracy(net,device,loss_fn,eachclass=False,set='test'):
     '''
     5.导入测试数据，计算准确度
     如果计算的是当前整个网络预测的准确率则返回一个int值否则返回一个list
@@ -157,19 +157,6 @@ def calculation_test_loss(net,loss_fn,device):
             loss = loss_fn(outputs, labels)  # 计算损失函数，对每一个都算损失函数
         return loss
 
-def print_list_img(l1,l2,title):
-    if len(l1)!=len(l2):
-        print("len(l1)!=len(l2),The accuracy curve cannot be drawn!")
-    else:
-        x=np.arange(0,len(l1))
-        plt.plot(x, l1, label='train')
-        plt.plot(x, l2,label='test')
-        plt.xlabel('x epoch')
-        plt.ylabel('y')
-        plt.title(title)
-        plt.legend()
-        plt.show()
-
 def trainNet_mul(number):
     '''number=重复训练的次数'''
     net=CIFARNET()
@@ -191,14 +178,12 @@ def trainNet_mul(number):
         test_loss=calculation_test_loss(net,loss_fn,device)
         train_loss_list.append(train_loss)
         test_loss_list.append(test_loss)
-        train_acc_list.append(calculation_accuracy(net,device,set='train'))
-        test_acc_list.append(calculation_accuracy(net,device,set='test'))
+        train_acc_list.append(calculation_accuracy(net,device,loss_fn,set='train'))
+        test_acc_list.append(calculation_accuracy(net,device,loss_fn,set='test'))
         print(f"In epoch {epoch}:")
         print("loss of train = {:.5f} and test = {:.5f}".format(train_loss,test_loss))
-    print_list_img(train_loss_list,test_loss,'losscurv')
-    print_list_img(train_acc_list,test_acc_list,'acccurv')
-    
+    print(f"train loss and acc:{train_loss_list}\n{train_acc_list}\ntest loss and acc{test_loss_list}{test_acc_list}")    
     print("Finish!")
 
-trainNet_mul(10)
+trainNet_mul(3)
 

@@ -145,3 +145,4 @@ a=np.random.randint(low, high=None, size=None, dtype='I')  #整数
   net.to(device)
   inputs, labels = data[0].to(device), data[1].to(device)
   ```
+7. 引入可视化工具tensorboard

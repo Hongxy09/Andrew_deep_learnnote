@@ -1,4 +1,6 @@
-## LeNet初步实现
+## 代码地址
+https://github.com/Hongxy09/Deeplearn_note/tree/main/Pytorch
+## LeNet实现
 1. 导入数据集
 规范化数据集，每次输出一组数目为```batch_size```的图片，实现图像可视化，调用```print_img(number=1)```可批量打印图片
 2. 神经网络设计（输入层+隐藏层+输出层）
@@ -21,3 +23,4 @@ INPUT-conv->C1(6@28x28)-subsamling->S2(6@14x14)-conv->C3(16@10x10)-subsampling->
 ```scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9)```
 调整epoch=200，打印训练集损失函数图形如下![训练集损失函数](../img/loss-train.png)
 
+## AlexNet实现
