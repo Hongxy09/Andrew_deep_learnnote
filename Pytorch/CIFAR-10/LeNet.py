@@ -107,20 +107,9 @@ def trainNet_once(net,loss_fn,optimizer,scheduler,device):
         loss.backward()
         optimizer.step()
     torch.save(net.state_dict(), PATH)
-    
+    return loss
 
-def accuracy(outputs,labels):
-    _, predictions = torch.max(outputs, 1)
-    for label, prediction in zip(labels, predictions):
-        if label == prediction:
-            correct_count += 1
-        total_count += 1
-    accuracy=100 * correct_count / total_count
-    print('Accuracy of %5s network: %d %%' % (set,accuracy))
-    return accuracy
-
-
-def calcul(net,device,eachclass=False,set='test'):
+def calculation_accuracy(net,device,eachclass=False,set='test'):
     '''
     5.导入测试数据，计算准确度
     如果计算的是当前整个网络预测的准确率则返回一个int值否则返回一个list
@@ -192,6 +181,24 @@ def trainNet_mul(number):
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     net.to(device)
     #保存数据并打印图像
+    train_acc_list=[]
+    test_acc_list=[]
+    train_loss_list=[]
+    test_loss_list=[]
+    train_loss,test_loss=0.0,0.0
+    for epoch in range(number):
+        train_loss=trainNet_once(net,loss_fn,optimizer,scheduler,device)
+        test_loss=calculation_test_loss(net,loss_fn,device)
+        train_loss_list.append(train_loss)
+        test_loss_list.append(test_loss)
+        train_acc_list.append(calculation_accuracy(net,device,set='train'))
+        test_acc_list.append(calculation_accuracy(net,device,set='test'))
+        print(f"In epoch {epoch}:")
+        print("loss of train = {:.5f} and test = {:.5f}".format(train_loss,test_loss))
+    print_list_img(train_loss_list,test_loss,'losscurv')
+    print_list_img(train_acc_list,test_acc_list,'acccurv')
+    
+    print("Finish!")
 
 trainNet_mul(10)
 
