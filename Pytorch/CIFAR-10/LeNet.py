@@ -19,7 +19,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 global PATH
-PATH = 'C:/code/Deeplearn_note/Pytorch/CIFAR-10/cifar_net.pth'
+PATH = 'C:/code/Deeplearn_note/Pytorch/CIFAR-10/cifar_lenet.pth'
 '''
 1.导入数据集并规范化，部分图像可视化
 '''
