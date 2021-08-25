@@ -1,9 +1,22 @@
 import torch
-import numpy as np
 import torchvision
+import torchvision.transforms as transforms
+import matplotlib.pyplot as plt
+import numpy as np
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optim
+import numpy as np
+from torch.utils.tensorboard import SummaryWriter
 
-tensor = torch.rand(3,4)
-a=tensor.shape
-print(tensor)
-print(a)
-print(f"Shape\n of tensor: {tensor.shape}")
+writer = SummaryWriter(comment='test_tensorboard')
+
+for x in range(100):
+
+    writer.add_scalar('y=2x', x * 2, x)
+    writer.add_scalar('y=pow(2, x)',  2 ** x, x)
+
+    writer.add_scalars('data/scalar_group', {"xsinx": x * np.sin(x),
+                                             "xcosx": x * np.cos(x),
+                                             "arctanx": np.arctan(x)}, x)
+writer.close()
