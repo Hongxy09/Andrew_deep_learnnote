@@ -146,3 +146,21 @@ a=np.random.randint(low, high=None, size=None, dtype='I')  #整数
   inputs, labels = data[0].to(device), data[1].to(device)
   ```
 7. 引入可视化工具tensorboard
+```python
+pip install tensorboard
+from torch.utils.tensorboard import SummaryWriter#在prompt里面检查
+#环境变量中添加路径（只加文件夹路径）"C:\Users\DELL\AppData\Local\conda\conda\envs\pytorchenv\Scripts\tensorboard.exe"
+#安装插件torch-tb-profiler，vsc集成插件，运行时会提示是否安装
+#py脚本中
+from torch.utils.tensorboard import SummaryWriter
+
+writer = SummaryWriter(comment='test_tensorboard')
+
+for x in range(100):
+   writer.add_scalar('y=2x', x * 2, x)
+   writer.add_scalar('y=pow(2, x)',  2 ** x, x)
+   writer.add_scalars('data/scalar_group', {"xsinx": x * np.sin(x),"xcosx": x * np.cos(x),"arctanx": np.arctan(x)}, x)
+writer.close()
+#直接查看可视化的办法：from torch.utils.tensorboard import SummaryWriter上面一行启动会话-当前目录
+#记录一些快捷指令
+```
