@@ -1,22 +1,21 @@
 import torch
-import torchvision
-import torchvision.transforms as transforms
-import matplotlib.pyplot as plt
-import numpy as np
-import torch.nn as nn
-import torch.nn.functional as F
-import torch.optim as optim
-import numpy as np
 from torch.utils.tensorboard import SummaryWriter
+writer = SummaryWriter("runs/test")
+x = torch.arange(-5, 5, 0.1).view(-1, 1)
+y = -5 * x + 0.1 * torch.randn(x.size())
 
-writer = SummaryWriter(comment='test_tensorboard')
+model = torch.nn.Linear(1, 1)
+criterion = torch.nn.MSELoss()
+optimizer = torch.optim.SGD(model.parameters(), lr = 0.1)
 
-for x in range(100):
+def train_model(iter):
+    for epoch in range(iter):
+        y1 = model(x)
+        loss = criterion(y1, y)
+        writer.add_scalar("Loss/train", loss, epoch)
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
 
-    writer.add_scalar('y=2x', x * 2, x)
-    writer.add_scalar('y=pow(2, x)',  2 ** x, x)
-
-    writer.add_scalars('data/scalar_group', {"xsinx": x * np.sin(x),
-                                             "xcosx": x * np.cos(x),
-                                             "arctanx": np.arctan(x)}, x)
-writer.close()
+train_model(10)
+writer.flush()
